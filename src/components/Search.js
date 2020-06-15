@@ -22,7 +22,8 @@ export default class Search extends React.Component {
     }
 
     buildUrl = () => {
-        let url = `https://api.github.com/search/users?q=example`;
+        const {page} = this.state;
+        let url = `https://api.github.com/search/users?q=example&page=${page}`;
 
         return url;
     }
