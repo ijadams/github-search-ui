@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import {CircularProgress} from "@material-ui/core";
+import {CircularProgress, TablePagination} from "@material-ui/core";
 import {Result} from './Result';
 
 export default class Search extends React.Component {
@@ -13,29 +13,34 @@ export default class Search extends React.Component {
             results: {},
             loading: false,
             message: '',
-            totalResults: 0,
-            currentPageNo: 0,
+            totalResults: null,
+            currentPageNo: null,
+            rowsPerPage: 30,
+            page: 0
         };
 
     }
 
-    fetchSearchResults = (updatedPageNo = '', query) => {
-        const pageNumber = updatedPageNo ? `&page=${updatedPageNo}` : '';
-        const searchUrl = `https://api.github.com/search/users?q=example`;
+    buildUrl = () => {
+        let url = `https://api.github.com/search/users?q=example`;
 
+        return url;
+    }
 
+    fetchSearchResults = () => {
+        const searchUrl = this.buildUrl();
+        const {rowsPerPage} = this.state;
         axios.get(searchUrl, {})
             .then(res => {
-                console.log(res);
-                const total = res.data.total;
                 const resultNotFoundMsg = !res.data.items.length
                     ? 'Uhhh No results were found.'
                     : '';
+                const results = res.data.items.slice(0, rowsPerPage);
+                console.log('results', results);
                 this.setState({
-                    results: res.data.items,
+                    results: results,
                     message: resultNotFoundMsg,
-                    totalResults: total,
-                    currentPageNo: updatedPageNo,
+                    totalResults: res.data.total_count,
                     loading: false
                 })
             })
@@ -55,7 +60,7 @@ export default class Search extends React.Component {
             this.setState({query, results: {}, message: '', totalPages: 0, totalResults: 0});
         } else {
             this.setState({query, loading: true, message: ''}, () => {
-                this.fetchSearchResults(1, query);
+                this.fetchSearchResults();
             });
         }
     };
@@ -65,19 +70,45 @@ export default class Search extends React.Component {
 
         if (Object.keys(results).length && results.length) {
             return (
-                <div className="results-container">
-                    {results.map(result => {
-                        return (
-                            <div>
-                                <Result data={result}/>
-                            </div>
-                        )
-                    })}
+                <div className="results--container">
+                    <Result data={results}/>
+                </div>
+            )
+        }
+    };
+
+    handleChangePage = (e, page) => {
+        this.setState({page: page}, () => {
+            this.fetchSearchResults();
+        });
+    };
+
+    handleChangeRowsPerPage = (page) => {
+        this.setState({rowsPerPage: page.props.value}, () => {
+            this.fetchSearchResults();
+        });
+    };
+
+    renderPagination = () => {
+        const {totalResults, results, rowsPerPage, page} = this.state;
+        if (Object.keys(results).length && results.length) {
+            return (
+                <div className="pagination--container">
+                    <TablePagination
+                        rowsPerPageOptions={[10, 20, 30]}
+                        component="div"
+                        count={totalResults}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onChangePage={(e, page) => this.handleChangePage(e, page)}
+                        onChangeRowsPerPage={(e, page) => this.handleChangeRowsPerPage(page)}
+                    />
 
                 </div>
             )
         }
     };
+
 
     render() {
         const {query, loading, message} = this.state;
@@ -113,7 +144,7 @@ export default class Search extends React.Component {
                 {this.renderSearchResults()}
 
                 {/*Navigation*/}
-
+                {this.renderPagination()}
 
             </div>
         )

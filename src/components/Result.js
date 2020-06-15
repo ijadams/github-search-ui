@@ -8,61 +8,41 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 
-const useStyles = makeStyles({
-    table: {
-        minWidth: 650,
-    },
-});
-
-function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-    createData('Eclair', 262, 16.0, 24, 6.0),
-    createData('Cupcake', 305, 3.7, 67, 4.3),
-    createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 
 export class Result extends React.Component {
 
     constructor(props) {
         super(props);
 
-        this.state = {
-        };
-
+        this.state = {};
     }
 
     render() {
-        const classes = this.useStyles();
-
+        const {data} = this.props.data;
+        const wrapper = React.createRef();
         return (
-            <div className="result--container">
+            <div className="result--container" ref={wrapper}>
                 <div>
+                    <p>{data}</p>
                     <TableContainer component={Paper}>
-                        <Table className={classes.table} size="small" aria-label="a dense table">
+                        <Table size="small" aria-label="a dense table">
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Dessert (100g serving)</TableCell>
-                                    <TableCell align="right">Calories</TableCell>
-                                    <TableCell align="right">Fat&nbsp;(g)</TableCell>
-                                    <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-                                    <TableCell align="right">Protein&nbsp;(g)</TableCell>
+                                    <TableCell>Name</TableCell>
+                                    <TableCell align="right">Type</TableCell>
+                                    <TableCell align="right">Score</TableCell>
+                                    <TableCell align="right">Avatar</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {rows.map((row) => (
-                                    <TableRow key={row.name}>
+                                {this.props.data.map((row, i) => (
+                                    <TableRow key={`id-${i}`}>
                                         <TableCell component="th" scope="row">
-                                            {row.name}
+                                            {row.login}
                                         </TableCell>
-                                        <TableCell align="right">{row.calories}</TableCell>
-                                        <TableCell align="right">{row.fat}</TableCell>
-                                        <TableCell align="right">{row.carbs}</TableCell>
-                                        <TableCell align="right">{row.protein}</TableCell>
+                                        <TableCell align="right">{row.type}</TableCell>
+                                        <TableCell align="right">{row.score}</TableCell>
+                                        <TableCell align="right"><img src={row.avatar_url}/></TableCell>
                                     </TableRow>
                                 ))}
                             </TableBody>
