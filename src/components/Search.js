@@ -161,7 +161,8 @@ export default class Search extends React.Component {
                         <div className="radios">
                             <FormControl component="fieldset">
                                 <FormLabel component="legend">Search By</FormLabel>
-                                <RadioGroup row aria-label="searchBy" name="searchBy" value={searchBy} onChange={(e, q) => this.setSearchBy(e, q)}>
+                                <RadioGroup row aria-label="searchBy" name="searchBy" value={searchBy}
+                                            onChange={(e, q) => this.setSearchBy(e, q)}>
                                     <FormControlLabel value="users" control={<Radio/>} label="User"/>
                                     <FormControlLabel value="repositories" control={<Radio/>} label="Repository"/>
                                 </RadioGroup>
