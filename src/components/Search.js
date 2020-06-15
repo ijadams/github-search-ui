@@ -1,7 +1,8 @@
 import React from 'react';
 import axios from 'axios';
-import {CircularProgress, TablePagination} from "@material-ui/core";
+import {CircularProgress, TablePagination, OutlinedInput, InputAdornment} from "@material-ui/core";
 import {Result} from './Result';
+import SearchIcon from '@material-ui/icons/Search';
 
 export default class Search extends React.Component {
 
@@ -22,11 +23,10 @@ export default class Search extends React.Component {
     }
 
     buildUrl = () => {
-        const {page} = this.state;
-        let url = `https://api.github.com/search/users?q=example&page=${page}`;
-
+        const {page, query} = this.state;
+        let url = `https://api.github.com/search/users?q=${query}&page=${page}`;
         return url;
-    }
+    };
 
     fetchSearchResults = () => {
         const searchUrl = this.buildUrl();
@@ -55,13 +55,17 @@ export default class Search extends React.Component {
             })
     };
 
-    handleOnInputChange = (event) => {
-        const query = event.target.value;
+    handleOnInputChange = (e, q) => {
+        // debounce
+        const query = e.target.value;
         if (!query) {
             this.setState({query, results: {}, message: '', totalPages: 0, totalResults: 0});
         } else {
-            this.setState({query, loading: true, message: ''}, () => {
-                this.fetchSearchResults();
+            this.setState({query, message: ''}, () => {
+                setTimeout(() => {
+                    this.setState({loading: true});
+                    this.fetchSearchResults();
+                }, 300);
             });
         }
     };
@@ -72,20 +76,20 @@ export default class Search extends React.Component {
         if (Object.keys(results).length && results.length) {
             return (
                 <div className="results--container">
-                    <Result data={results}/>
+                    <Result data={results} pageSize={this.state.rowsPerPage}/>
                 </div>
             )
         }
     };
 
     handleChangePage = (e, page) => {
-        this.setState({page: page}, () => {
+        this.setState({page: page, loading: true}, () => {
             this.fetchSearchResults();
         });
     };
 
     handleChangeRowsPerPage = (page) => {
-        this.setState({rowsPerPage: page.props.value}, () => {
+        this.setState({rowsPerPage: page.props.value, loading: true}, () => {
             this.fetchSearchResults();
         });
     };
@@ -101,6 +105,7 @@ export default class Search extends React.Component {
                         count={totalResults}
                         rowsPerPage={rowsPerPage}
                         page={page}
+                        showFirstButton={true}
                         onChangePage={(e, page) => this.handleChangePage(e, page)}
                         onChangeRowsPerPage={(e, page) => this.handleChangeRowsPerPage(page)}
                     />
@@ -116,30 +121,36 @@ export default class Search extends React.Component {
 
         return (
             <div className="search--container">
-                {/*	Heading*/}
-                <h2 className="heading">Github UI Search</h2>
-                {/* Search Input*/}
-                <label className="search-label" htmlFor="search-input">
-                    <input
-                        type="text"
-                        name="query"
-                        value={query}
-                        id="search-input"
-                        placeholder="Search..."
-                        onChange={this.handleOnInputChange}
-                    />
-                    <i className="fa fa-search search-icon" aria-hidden="true"/>
-                </label>
+                <div className="header">
+                    <h1>Github UI Search</h1>
+                    <div className="search--bar">
+                        <label className="search-label" htmlFor="search-input">
+                            <OutlinedInput
+                                type="text"
+                                name="query"
+                                value={query}
+                                id="search-input"
+                                placeholder="Search..."
+                                endAdornment={
+                                    <InputAdornment position="start">
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                onChange={(e, q) => this.handleOnInputChange(e, q)}
+                            />
+                        </label>
+                    </div>
+                </div>
 
                 {/*	Error Message*/}
                 {message && <p className="message">{message}</p>}
 
                 {/*	Loader*/}
-                <div style={{display: loading ? "block" : "none"}}>
-                    <CircularProgress/>
+                <div className={'loader'} style={{display: loading ? "block" : "none"}}>
+                    <div>
+                        <CircularProgress/>
+                    </div>
                 </div>
-
-                {/*Navigation*/}
 
                 {/*	Result*/}
                 {this.renderSearchResults()}

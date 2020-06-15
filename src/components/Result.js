@@ -19,9 +19,8 @@ export class Result extends React.Component {
 
     render() {
         const {data} = this.props.data;
-        const wrapper = React.createRef();
         return (
-            <div className="result--container" ref={wrapper}>
+            <div className="result--container">
                 <div>
                     <p>{data}</p>
                     <TableContainer component={Paper}>
