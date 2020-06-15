@@ -2,7 +2,7 @@ import React from "react";
 import {
   BrowserRouter as Router,
   Switch,
-  Route, Link,
+  Route
 } from "react-router-dom";
 
 import "./App.sass";
@@ -13,7 +13,7 @@ export default class App extends React.Component {
   render() {
     return (
         <Router>
-          <Switch>Z
+          <Switch>
             <Route path="/">
               <HomeView></HomeView>
             </Route>

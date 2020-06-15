@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+// import * as _ from 'lodash';
 import {CircularProgress, TablePagination, OutlinedInput, InputAdornment} from "@material-ui/core";
 import {Result} from './Result';
 import SearchIcon from '@material-ui/icons/Search';
@@ -56,7 +57,6 @@ export default class Search extends React.Component {
     };
 
     handleOnInputChange = (e, q) => {
-        // debounce
         const query = e.target.value;
         if (!query) {
             this.setState({query, results: {}, message: '', totalPages: 0, totalResults: 0});
@@ -65,10 +65,12 @@ export default class Search extends React.Component {
                 setTimeout(() => {
                     this.setState({loading: true});
                     this.fetchSearchResults();
-                }, 300);
+                }, 800)
             });
         }
     };
+
+
 
     renderSearchResults = () => {
         const {results} = this.state;
@@ -105,7 +107,6 @@ export default class Search extends React.Component {
                         count={totalResults}
                         rowsPerPage={rowsPerPage}
                         page={page}
-                        showFirstButton={true}
                         onChangePage={(e, page) => this.handleChangePage(e, page)}
                         onChangeRowsPerPage={(e, page) => this.handleChangeRowsPerPage(page)}
                     />
