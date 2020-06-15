@@ -1,9 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-// import * as _ from 'lodash';
 import {CircularProgress, TablePagination, OutlinedInput, InputAdornment} from "@material-ui/core";
 import {Result} from './Result';
 import SearchIcon from '@material-ui/icons/Search';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
 
 export default class Search extends React.Component {
 
@@ -18,14 +22,29 @@ export default class Search extends React.Component {
             totalResults: null,
             currentPageNo: null,
             rowsPerPage: 30,
-            page: 0
+            page: 0,
+            searchBy: 'users'
         };
 
     }
 
+    setSearchBy = (e, q) => {
+        const {query} = this.state;
+        if (!query) {
+            this.setState({searchBy: q});
+        } else {
+            this.setState({searchBy: q}, () => {
+                setTimeout(() => {
+                    this.setState({loading: true});
+                    this.fetchSearchResults();
+                }, 200)
+            });
+        }
+    };
+
     buildUrl = () => {
-        const {page, query} = this.state;
-        let url = `https://api.github.com/search/users?q=${query}&page=${page}`;
+        const {page, query, searchBy} = this.state;
+        let url = `https://api.github.com/search/${searchBy}?q=${query}&page=${page}`;
         return url;
     };
 
@@ -38,7 +57,6 @@ export default class Search extends React.Component {
                     ? 'Uhhh No results were found.'
                     : '';
                 const results = res.data.items.slice(0, rowsPerPage);
-                console.log('results', results);
                 this.setState({
                     results: results,
                     message: resultNotFoundMsg,
@@ -65,11 +83,10 @@ export default class Search extends React.Component {
                 setTimeout(() => {
                     this.setState({loading: true});
                     this.fetchSearchResults();
-                }, 800)
+                }, 1500)
             });
         }
     };
-
 
 
     renderSearchResults = () => {
@@ -78,7 +95,7 @@ export default class Search extends React.Component {
         if (Object.keys(results).length && results.length) {
             return (
                 <div className="results--container">
-                    <Result data={results} pageSize={this.state.rowsPerPage}/>
+                    <Result data={results} pageSize={this.state.rowsPerPage} searchBy={this.state.searchBy}/>
                 </div>
             )
         }
@@ -118,7 +135,7 @@ export default class Search extends React.Component {
 
 
     render() {
-        const {query, loading, message} = this.state;
+        const {query, loading, message, searchBy} = this.state;
 
         return (
             <div className="search--container">
@@ -134,12 +151,22 @@ export default class Search extends React.Component {
                                 placeholder="Search..."
                                 endAdornment={
                                     <InputAdornment position="start">
-                                        <SearchIcon />
+                                        <SearchIcon/>
                                     </InputAdornment>
                                 }
                                 onChange={(e, q) => this.handleOnInputChange(e, q)}
                             />
                         </label>
+
+                        <div className="radios">
+                            <FormControl component="fieldset">
+                                <FormLabel component="legend">Search By</FormLabel>
+                                <RadioGroup row aria-label="searchBy" name="searchBy" value={searchBy} onChange={(e, q) => this.setSearchBy(e, q)}>
+                                    <FormControlLabel value="users" control={<Radio/>} label="User"/>
+                                    <FormControlLabel value="repositories" control={<Radio/>} label="Repository"/>
+                                </RadioGroup>
+                            </FormControl>
+                        </div>
                     </div>
                 </div>
 

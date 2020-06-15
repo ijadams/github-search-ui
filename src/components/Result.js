@@ -1,5 +1,4 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -15,6 +14,10 @@ export class Result extends React.Component {
         super(props);
 
         this.state = {};
+    }
+
+    getRow() {
+
     }
 
     render() {
@@ -37,9 +40,9 @@ export class Result extends React.Component {
                                 {this.props.data.map((row, i) => (
                                     <TableRow key={`id-${i}`}>
                                         <TableCell component="th" scope="row">
-                                            {row.login}
+                                            <a href={row.html_url} target="_blank">{row.login || row.full_name}</a>
                                         </TableCell>
-                                        <TableCell align="right">{row.type}</TableCell>
+                                        <TableCell align="right">{row.type || 'Repo'}</TableCell>
                                         <TableCell align="right">{row.score}</TableCell>
                                         <TableCell align="right"><img src={row.avatar_url}/></TableCell>
                                     </TableRow>
