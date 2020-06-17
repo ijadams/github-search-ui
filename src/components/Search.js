@@ -28,6 +28,10 @@ export default class Search extends React.Component {
 
     }
 
+    /**
+     * @param e - event
+     * @param q - searchBy input for github api
+     */
     setSearchBy = (e, q) => {
         const {query} = this.state;
         if (!query) {
@@ -42,6 +46,9 @@ export default class Search extends React.Component {
         }
     };
 
+    /**
+     * @return string
+     */
     buildUrl = () => {
         const {page, query, searchBy} = this.state;
         let url = `https://api.github.com/search/${searchBy}?q=${query}&page=${page}`;
@@ -74,7 +81,10 @@ export default class Search extends React.Component {
             })
     };
 
-    handleOnInputChange = (e, q) => {
+    /**
+     * @param e - event
+     */
+    handleOnInputChange = (e) => {
         const query = e.target.value;
         if (!query) {
             this.setState({query, results: {}, message: '', totalPages: 0, totalResults: 0});
@@ -89,6 +99,9 @@ export default class Search extends React.Component {
     };
 
 
+    /**
+     * @return Result table
+     */
     renderSearchResults = () => {
         const {results} = this.state;
 
@@ -101,12 +114,19 @@ export default class Search extends React.Component {
         }
     };
 
+    /**
+     * @param e - event
+     * @param page - page (page count i.e. 1)
+     */
     handleChangePage = (e, page) => {
         this.setState({page: page, loading: true}, () => {
             this.fetchSearchResults();
         });
     };
 
+    /**
+     * @param page - page (page count i.e. 1)
+     */
     handleChangeRowsPerPage = (page) => {
         this.setState({rowsPerPage: page.props.value, loading: true}, () => {
             this.fetchSearchResults();
@@ -140,8 +160,10 @@ export default class Search extends React.Component {
         return (
             <div className="search--container">
                 <div className="header">
+                    {/*	title */}
                     <h1>Github UI Search</h1>
                     <div className="search--bar">
+                        {/*	Text input for main query */}
                         <label className="search-label" htmlFor="search-input">
                             <OutlinedInput
                                 type="text"
@@ -154,10 +176,11 @@ export default class Search extends React.Component {
                                         <SearchIcon/>
                                     </InputAdornment>
                                 }
-                                onChange={(e, q) => this.handleOnInputChange(e, q)}
+                                onChange={(e, q) => this.handleOnInputChange(e)}
                             />
                         </label>
 
+                        {/*	Radio searchBy section for user and repo search */}
                         <div className="radios">
                             <FormControl component="fieldset">
                                 <FormLabel component="legend">Search By</FormLabel>

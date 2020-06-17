@@ -16,10 +16,6 @@ export class Result extends React.Component {
         this.state = {};
     }
 
-    getRow() {
-
-    }
-
     render() {
         const {data} = this.props.data;
         return (
